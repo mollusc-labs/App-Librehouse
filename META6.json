@@ -1,0 +1,35 @@
+{
+    "auth": "zef:mollusc-labs",
+    "authors": [
+        "Rawley Fowler"
+    ],
+    "build-depends": [
+    ],
+    "depends": [
+        "Humming-Bird",
+        "DBIish",
+        "Slang::SQL",
+        "Template6"
+    ],
+    "provides": {
+        "App::Librehouse": "lib/App/Librehouse.rakumod",
+        "App::Librehouse::Render": "lib/App/Librehouse/Render.rakumod",
+        "App::Librehouse::Service": "lib/App/Librehouse/Service.rakumod"
+    },
+    "description": "A simple, FOSS text BBS",
+    "license": "BSD-3-Clause",
+    "name": "App::Librehouse",
+    "perl": "6.d",
+    "resources": [ ],
+    "source-url": "https://github.com/mollusc-labs/App-Librehouse",
+    "support": {
+        "source": "https://github.com/mollusc-labs/App-Librehouse"
+    },
+    "tags": [
+        "BBS"
+    ],
+    "test-depends": [
+        "Test"
+    ],
+    "version": "0.0.1"
+}
