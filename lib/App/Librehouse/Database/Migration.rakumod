@@ -1,9 +1,16 @@
 use v6.d;
-use SQL::Slang;
+use Slang::SQL;
 
-unit module App::Librehouse::Database::Migration;
+unit class App::Librehouse::Database::Migration is export;
 
-our class Migration {
-    has $.Up;
-    has $.Down;
+my @used_ids;
+
+has $.id is required;
+has &.up is required;
+has &.down is required;
+
+method TWEAK {
+    die "Your id is aleady in use" if @used_ids.first: * eq $!id;
+    @used_ids.push($!id);
 }
+
