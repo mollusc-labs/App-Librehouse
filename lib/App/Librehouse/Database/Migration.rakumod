@@ -2,6 +2,8 @@ use v6.d;
 
 unit class App::Librehouse::Database::Migration is export;
 
+our @migrations is export; 
+
 my @used_ids;
 
 has $.id is required;
