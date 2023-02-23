@@ -1,5 +1,4 @@
 use v6.d;
-use Slang::SQL;
 
 unit class App::Librehouse::Database::Migration is export;
 
