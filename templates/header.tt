@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>[% title %]</title>
+    [% for item in meta %]
+    <meta name="[% item.key %]" content="[% item.value %]"/>
+    [% end %]
+    [% for item in scripts %]
+    <script src="[% item %]"></script>
+    [% end %]
+    [% for item in styles %]
+    <link href="[% item %]" rel="text/css"/>
+    [% end %]
+  </head>
+  <body>
+    <header>This is a header</header>
