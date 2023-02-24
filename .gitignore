@@ -1,6 +1,6 @@
 .precomp
 sdist/
-<<<<<<< HEAD
 .environment
 .env
 .env*
+.pgdata

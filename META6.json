@@ -18,6 +18,7 @@
         "App::Librehouse": "lib/App/Librehouse.rakumod",
         "App::Librehouse::Render": "lib/App/Librehouse/Render.rakumod",
         "App::Librehouse::Service": "lib/App/Librehouse/Service.rakumod",
+        "App::Librehouse::Database": "lib/App/Librehouse/Database.rakumod",
         "App::Librehouse::Database::Migration": "lib/App/Librehouse/Database/Migration.rakumod"
     },
     "description": "A simple, FOSS text BBS",
