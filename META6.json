@@ -9,7 +9,8 @@
         "Humming-Bird",
         "DBIish",
         "Slang::SQL",
-        "Template6"
+        "Template6",
+        "Env::Dotenv"
     ],
     "provides": {
         "App::Librehouse": "lib/App/Librehouse.rakumod",

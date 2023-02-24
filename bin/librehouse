@@ -3,4 +3,15 @@
 use v6.d;
 use App::Librehouse;
 
-App::Librehouse::start(%*ENV<LIBREHOUSE_PORT> // 8080);
+{
+    use Env::Dotenv :ALL;
+    dotenv_load;
+}
+
+sub MAIN(*@args) {
+    # TODO: Implement migrate up, migrate down, and start.
+    die "Don't know what to do with '@args'." if @args.elems > 2;
+    if @args[0] eq 'start' {
+        App::Librehouse::start(%*ENV<LIBREHOUSE_PORT> // 8080);
+    }
+}

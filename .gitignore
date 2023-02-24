@@ -1,2 +1,5 @@
 .precomp
 sdist/
+.environment
+.env
+.env*
