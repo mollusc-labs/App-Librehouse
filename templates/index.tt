@@ -1,5 +1,6 @@
 [% INCLUDE "header" %]
 <main>
   This is an index.
+  [% foo %]
 </main>
 [% INCLUDE "footer" %]
