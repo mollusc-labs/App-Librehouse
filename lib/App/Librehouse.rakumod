@@ -1,7 +1,8 @@
 use v6.d;
 
-use App::Librehouse::Service;
+#use App::Librehouse::Service;
 use App::Librehouse::Render;
+
 use Humming-Bird::Core;
 use Humming-Bird::Middleware;
 use Humming-Bird::Advice;

@@ -6,7 +6,9 @@ use Env::Dotenv :load;
 
 unit module App::Librehouse::Database;
 
-sub get-db is export {
+dotenv_load;
+
+sub db is export {
     state $db = DBIish.connect('Pg',
                                :host<localhost>,
                                :port(5432),
@@ -16,30 +18,17 @@ sub get-db is export {
     $db;
 }
 
-multi sub exec-sql(&query) is export {
+sub exec-sql(Str:D $sql, *@args --> Monad::Result:D) is export {
     try {
         CATCH {
-            return error($!);
-        }
-        my $result = &query();
-        return ok($result);
-    }
-}
-multi sub exec-sql(Str:D $query) is export {
-    try {
-        CATCH {
-            return error($!);
+            default {
+                return error($!);
+            }
         }
 
-        my $result = get-db.exec($query);
-        return ok($result);
+        my $stmt = db.prepare($sql);
+        $stmt.execute(|@args);
+ 
+        return ok($stmt.all-rows(:array-of-hash));
     }
-}
-
-sub EXPORT(|) is export {
-    dotenv_load;
-
-    Map.new(
-        :get-db(&get-db)
-    );
 }

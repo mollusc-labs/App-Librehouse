@@ -1,0 +1,12 @@
+use v6.d;
+use Test;
+
+plan 4;
+
+use-ok('App::Librehouse', 'Does main module use OK?');
+use-ok('App::Librehouse::Database', 'Does database module use OK?');
+use-ok('App::Librehouse::Service', 'Does service module use OK?');
+use-ok('App::Librehouse::Render', 'Does render module use OK?');
+
+done-testing;
+
