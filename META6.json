@@ -12,7 +12,8 @@
         "Slang::SQL",
         "Template6",
         "Env::Dotenv",
-        "Template6"
+        "Template6",
+        "Monad::Result"
     ],
     "provides": {
         "App::Librehouse": "lib/App/Librehouse.rakumod",
