@@ -7,8 +7,8 @@ unit class App::Librehouse::Database::Migration is export;
 my @used_ids;
 
 has $.id is required;
-has $.up is required;
-has $.down is required;
+has $.up is Str:D;
+has $.down is Str:D;
 
 method TWEAK {
     die "Your id is aleady in use" if @used_ids.first: * eq $!id;
