@@ -32,3 +32,7 @@ sub exec-sql(Str:D $sql, *@args --> Monad::Result:D) is export {
         return ok($stmt.all-rows(:array-of-hash));
     }
 }
+
+sub exec-transaction(Str:D $sql, *@args --> Monad::Result:D) is export {
+    exec-sql("BEGIN;\n$sql\nCOMMIT;", |@args);
+}
