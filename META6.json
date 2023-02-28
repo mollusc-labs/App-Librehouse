@@ -9,7 +9,6 @@
     "depends": [
         "Humming-Bird",
         "DBIish",
-        "Slang::SQL",
         "Template6",
         "Env::Dotenv",
         "Template6",
