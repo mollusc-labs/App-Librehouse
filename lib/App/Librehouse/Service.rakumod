@@ -1,5 +1,7 @@
 use v6.d;
 
+use Monad::Result;
+
 use App::Librehouse::Database;
 
 unit module App::Librehouse::Service;
