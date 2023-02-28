@@ -14,4 +14,6 @@ sub MAIN(*@args) {
     if @args[0] eq 'start' {
         App::Librehouse::start(%*ENV<LIBREHOUSE_PORT> // 8080);
     }
+
+    react whenever signal(SIGINT) { exit 0 }
 }
