@@ -14,37 +14,43 @@ use Monad::Result;
 sub MAIN(*@args) {
     # TODO: Implement migrate up, migrate down, and start.
     die "Don't know what to do with '@args'." if @args.elems > 2;
-    given args[0] {
+    given @args[0] {
         when 'start' {
             App::Librehouse::start(%*ENV<LIBREHOUSE_PORT> // 8080);
         }
-        when 'migrate'{
-            my $migration_string;
+        when 'migrate' {
             if @args[1] eq 'up' {
-                $migration-string = @migrations.reduce(-> $acc, $migrate {
-                    $acc ~ $migrate.up;        
-                });
-            
+                for @migrations>>.up -> $migration { 
+                    given exec-raw-sql($migration) {
+                        when Monad::Result::Ok {
+                            say "Transaction Completed";
+                        }
+                        when Monad::Result::Error {
+                            warn "Transaction Failed";
+                        }
+                    }
+                }
+                exit 0;
             } elsif @args[1] eq 'down' {
-                $migration-string = @migrations.reduce(-> $acc, $migrate {
-                    $acc ~ $migrate.down;        
-                });
-
+                for @migrations>>.down.reverse -> $migration {
+                    given exec-raw-sql($migration) {
+                        when Monad::Result::Ok {
+                            say "Transaction Completed";
+                        }
+                        when Monad::Result::Error {
+                            warn "Transaction Failed";
+                        }
+                    }
+                }
+                exit 0;
             } else {
                 die "Don't know what to do with '@args'.";
             }
 
-            given exec-transaction($migration_string) {
-                when Monad::Result::Ok {
-                    say "Transaction Completed";
-                }
-                when Monad::Result::Ok {
-                    warn "Transaction Failed";
-                }
-            }
+
         }
     }
-    
+
 
     react whenever signal(SIGINT) { exit 0 }
 }

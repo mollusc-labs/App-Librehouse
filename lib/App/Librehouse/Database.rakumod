@@ -18,11 +18,25 @@ sub db is export {
     $db;
 }
 
+sub exec-raw-sql(Str:D $sql) is export { 
+    try {
+        CATCH {
+            default {
+                return error($_);
+            }
+        }
+
+        db.execute($sql);
+ 
+        return ok(Nil);
+    } 
+}
+
 sub exec-sql(Str:D $sql, *@args --> Monad::Result:D) is export {
     try {
         CATCH {
             default {
-                return error($!);
+                return error($_);
             }
         }
 
@@ -33,6 +47,3 @@ sub exec-sql(Str:D $sql, *@args --> Monad::Result:D) is export {
     }
 }
 
-sub exec-transaction(Str:D $sql, *@args --> Monad::Result:D) is export {
-    exec-sql("BEGIN;\n$sql\nCOMMIT;", |@args);
-}
