@@ -2,6 +2,9 @@
 
 use v6.d;
 use App::Librehouse;
+use App::Librehouse::Database::Migration;
+use App::Librehouse::Database;
+use Monad::Result;
 
 {
     use Env::Dotenv :ALL;
@@ -11,9 +14,43 @@ use App::Librehouse;
 sub MAIN(*@args) {
     # TODO: Implement migrate up, migrate down, and start.
     die "Don't know what to do with '@args'." if @args.elems > 2;
-    if @args[0] eq 'start' {
-        App::Librehouse::start(%*ENV<LIBREHOUSE_PORT> // 8080);
+    given @args[0] {
+        when 'start' {
+            App::Librehouse::start(%*ENV<LIBREHOUSE_PORT> // 8080);
+        }
+        when 'migrate' {
+            if @args[1] eq 'up' {
+                for @migrations>>.up -> $migration { 
+                    given exec-raw-sql($migration) {
+                        when Monad::Result::Ok {
+                            say "Transaction Completed";
+                        }
+                        when Monad::Result::Error {
+                            warn "Transaction Failed";
+                        }
+                    }
+                }
+                exit 0;
+            } elsif @args[1] eq 'down' {
+                for @migrations>>.down.reverse -> $migration {
+                    given exec-raw-sql($migration) {
+                        when Monad::Result::Ok {
+                            say "Transaction Completed";
+                        }
+                        when Monad::Result::Error {
+                            warn "Transaction Failed";
+                        }
+                    }
+                }
+                exit 0;
+            } else {
+                die "Don't know what to do with '@args'.";
+            }
+
+
+        }
     }
+
 
     react whenever signal(SIGINT) { exit 0 }
 }
