@@ -1,7 +1,7 @@
 use v6.d;
 
 use DBIish;
-use Monad::Result;
+use Monad::Result :subs;
 use Env::Dotenv :load;
 
 unit module App::Librehouse::Database;
