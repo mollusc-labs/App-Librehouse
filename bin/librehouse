@@ -11,6 +11,8 @@ use Monad::Result;
     dotenv_load;
 }
 
+
+
 sub MAIN(*@args) {
     # TODO: Implement migrate up, migrate down, and start.
     die "Don't know what to do with '@args'." if @args.elems > 2;
@@ -19,37 +21,39 @@ sub MAIN(*@args) {
             App::Librehouse::start(%*ENV<LIBREHOUSE_PORT> // 8080);
         }
         when 'migrate' {
-            if @args[1] eq 'up' {
-                for @migrations>>.up -> $migration { 
-                    given exec-raw-sql($migration) {
+            for @migrations -> $migration { 
+                say $migration.id;
+                if @args[1] eq 'up' {
+                    exec-raw-sql("CREATE TABLE IF NOT EXISTS migrations (
+                                id VARCHAR PRIMARY KEY,
+                                query VARCHAR UNIQUE)");
+                    given exec-raw-sql($migration.up) {
                         when Monad::Result::Ok {
                             say "Transaction Completed";
+                            exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)" |($migration.id, $migration.up));
                         }
                         when Monad::Result::Error {
                             warn "Transaction Failed";
                         }
                     }
-                }
-                exit 0;
-            } elsif @args[1] eq 'down' {
-                for @migrations>>.down.reverse -> $migration {
+                }elsif @args[1] eq 'down' {
                     given exec-raw-sql($migration) {
                         when Monad::Result::Ok {
                             say "Transaction Completed";
+                            exec-raw-sql("DELETE FROM migrations WHERE id=?" |($migration.id));
                         }
                         when Monad::Result::Error {
                             warn "Transaction Failed";
                         }
                     }
+
+                }else {
+                    die "Don't know what to do with '@args'.";
+
                 }
-                exit 0;
-            } else {
-                die "Don't know what to do with '@args'.";
             }
-
-
+            exit 0;
         }
-    }
 
 
     react whenever signal(SIGINT) { exit 0 }
