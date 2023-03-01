@@ -11,6 +11,7 @@ $templater.add-path: 'templates';
 submethod CALL-ME(Str:D $tmpl, Str:D $title, *%args) {
     %args<scripts>.push: 'librehouse.js';
     %args<styles>.push:  'librehouse.css';
+    %args<render-date> = DateTime.now.utc;
     
     $templater.process: $tmpl, :$title, |%args;
 }

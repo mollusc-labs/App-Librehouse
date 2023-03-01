@@ -1,5 +1,5 @@
 <footer>
-  This is a footer
+[% render-date %]
 </footer>
 </body>
 </html>
