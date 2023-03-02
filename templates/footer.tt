@@ -1,5 +1,11 @@
 <footer>
-[% render-date %]
+  <div>
+    <p>Rendered with <a href="https://github.com/rawleyfowler/Humming-Bird">Humming-Bird</a> and [% os %] on [% render-date %]</p>
+    <p>
+      Librehouse is free software. All scripts, backend code, and database configurations
+      can be found on <a href="https://github.com/mollusc-labs/App-Librehouse">github</a>.
+    </p>
+</div>
 </footer>
 </body>
 </html>

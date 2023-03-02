@@ -1,4 +1,5 @@
 use v6.d;
+use strict;
 
 use Template6;
 
@@ -12,9 +13,11 @@ submethod CALL-ME(Str:D $tmpl, Str:D $title, *%args) {
     %args<scripts>.push: 'librehouse.js';
     %args<styles>.push:  'librehouse.css';
     %args<render-date> = DateTime.now.utc;
-    without %args<meta> {
-        %args<meta> = Hash.new;
-    }
+    %args<os> = "$*DISTRO $*KERNEL";
+
+    # Hacks
+    %args<meta> = Hash.new without %args<meta>;
+    %args<toast> = Nil without %args<toast>;
 
     $templater.process: $tmpl, :$title, |%args;
 }

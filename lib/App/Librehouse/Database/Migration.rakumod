@@ -14,7 +14,6 @@ method TWEAK {
     @used_ids.push($!id);
 }
 
-
 our @migrations is export = [
     App::Librehouse::Database::Migration.new( 
         id => "init_user_table", 
@@ -29,6 +28,7 @@ our @migrations is export = [
                created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)", 
         down => "DROP TABLE IF EXISTS usr CASCADE" 
     ),
+    
     App::Librehouse::Database::Migration.new( 
         id => "init_board_table",
         up =>   "CREATE TABLE IF NOT EXISTS board (
@@ -43,6 +43,7 @@ our @migrations is export = [
                )",
         down => "DROP TABLE IF EXISTS board CASCADE"
     ),
+    
     App::Librehouse::Database::Migration.new(
         id => "init_post_table",
         up => "CREATE TABLE IF NOT EXISTS post (
@@ -58,6 +59,7 @@ our @migrations is export = [
                )",
         down => "DROP TABLE IF EXISTS post CASCADE"
     ),
+    
     App::Librehouse::Database::Migration.new(
         id => "init_reply_table",
         up => "CREATE TABLE IF NOT EXISTS reply (
@@ -74,11 +76,13 @@ our @migrations is export = [
         
         down => "DROP TABLE IF EXISTS reply CASCADE"
     ),
+    
     App::Librehouse::Database::Migration.new(
         id => "add_bio_column_to_usr",
         up => "ALTER TABLE usr ADD COLUMN IF NOT EXISTS bio VARCHAR(255) DEFAULT 'This user has no bio...'",
         down => "ALTER TABLE usr DROP COLUMN bio CASCADE" 
     ),
+    
     App::Librehouse::Database::Migration.new(
         id => "add_name_idx_to_usr",
         up => "CREATE UNIQUE INDEX IF NOT EXISTS usr_name_idx ON usr (name)", 
@@ -108,4 +112,3 @@ our @migrations is export = [
         down => "ALTER TABLE usr DROP COLUMN banned CASCADE"
     )
 ];
-

@@ -22,12 +22,14 @@ $router.get(&index-handler);
 
 sub login-index-handler(Request:D $request, Response:D $response) {
     my $csrf = await csrf-token;
-    $response.html(App::Librehouse::Render('login', 'Login', :$csrf));
+    my $toast = $request.query('toast');
+    $response.html(App::Librehouse::Render('login', 'Login', :$csrf, :$toast));
 }
 $router.get('/login', &login-index-handler);
 
 sub login-handler(Request:D $request, Response:D $response) {
-    $response.html('TODO: Decode URL-Encoded!');
+    say 'TODO: Implement login';
+    $response.redirect('/');
 }
 $router.post('/login', &login-handler);
 
@@ -39,7 +41,7 @@ $router.get('/signup', &signup-index-handler);
 
 sub signup-handler(Request:D $request, Response:D $response) {
     say 'TODO: Implement sign up';
-    $response.redirect('/login', :permanent);
+    $response.redirect('/login?toast=success');
 }
 $router.post('/signup', &signup-handler);
 
