@@ -46,4 +46,3 @@ sub exec-sql(Str:D $sql, *@args --> Monad::Result:D) is export {
         return ok($stmt.all-rows(:array-of-hash));
     }
 }
-
