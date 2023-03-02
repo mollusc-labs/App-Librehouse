@@ -34,6 +34,8 @@ sub MAIN(*@args) {
                             my @thing = exec-sql("SELECT up FROM migrations WHERE id=?", $migration.id);
                             if @thing.elems == 1 && @thing[0]<up> !eq $migration.up && @thing[0]<down> !eq $migration.down {
                                 die "Migrations did not match";
+                            } else {
+                                next;
                             }
                             exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)" |($migration.id, $migration.up));
                             say "Transaction Completed";
