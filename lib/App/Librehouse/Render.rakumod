@@ -16,8 +16,6 @@ submethod CALL-ME(Str:D $tmpl, Str:D $title, *%args) {
         %args<meta> = Hash.new;
     }
 
-    say %args.raku;
-
     $templater.process: $tmpl, :$title, |%args;
 }
 
