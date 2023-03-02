@@ -15,10 +15,10 @@
         <meta name="[% item.key %]" content="[% item.value %]"/>
     [% end %]
     [% for item in scripts %]
-        <script src="[% item %]"></script>
+        <script src="/static/js/[% item %]"></script>
     [% end %]
     [% for item in styles %]
-        <link href="[% item %]" rel="text/css"/>
+        <link href="/static/css/[% item %]" rel="text/css"/>
     [% end %]
   </head>
   <body>
