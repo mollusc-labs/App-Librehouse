@@ -7,17 +7,18 @@
     <meta name="keywords" content="Free Speech, Raku, Forum, Technology, Text board, Channel, Chan, Nerds, Forum, Tech Forum"/>
     <meta name="auther" content="https://github.com/mollusc-labs/App-Librehouse"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    [% unless meta{'description'} %]
+    [% set description = meta.description %]
+    [% unless description %]
         <meta name="description" content="Free Software forum for passionate individuals."/>
     [% end %]
     [% for item in meta %]
-    <meta name="[% item.key %]" content="[% item.value %]"/>
+        <meta name="[% item.key %]" content="[% item.value %]"/>
     [% end %]
     [% for item in scripts %]
-    <script src="[% item %]"></script>
+        <script src="[% item %]"></script>
     [% end %]
     [% for item in styles %]
-    <link href="[% item %]" rel="text/css"/>
+        <link href="[% item %]" rel="text/css"/>
     [% end %]
   </head>
   <body>
