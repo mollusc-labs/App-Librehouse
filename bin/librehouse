@@ -42,7 +42,7 @@ sub MAIN(*@args) {
                             warn "Transaction Failed";
                         }
                     }
-                }elsif @args[1] eq 'down' {
+                } elsif @args[1] eq 'down' {
                     given exec-raw-sql($migration) {
                         when Monad::Result::Ok {
                             say "Transaction Completed";
@@ -53,7 +53,7 @@ sub MAIN(*@args) {
                         }
                     }
 
-                }else {
+                } else {
                     die "Don't know what to do with '@args'.";
 
                 }
