@@ -25,12 +25,18 @@ sub MAIN(*@args) {
                 say $migration.id;
                 if @args[1] eq 'up' {
                     exec-raw-sql("CREATE TABLE IF NOT EXISTS migrations (
-                                id VARCHAR PRIMARY KEY,
-                                query VARCHAR UNIQUE)");
+                                id VARCHAR UNIQUE PRIMARY KEY,
+                                up VARCHAR UNIQUE,
+                                down VARCHAR UNIQUE,)");
+
                     given exec-raw-sql($migration.up) {
                         when Monad::Result::Ok {
-                            say "Transaction Completed";
-                            exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)" |($migration.id, $migration.up));
+                            if exec-sql("SELECT up FROM migrations WHERE id=?" |$migration.id) eq $migration.up && exec-sql("SELECT down FROM migrations WHERE id=?" |$migration.id) eq $migration.down {
+                                exec-raw-sql("UPDATE migrations up=?, down=? WHERE id=?" |($migration.up, $migration.down, $migration.id));
+                            }else {
+                                exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)" |($migration.id, $migration.up));
+                                say "Transaction Completed";
+                            }
                         }
                         when Monad::Result::Error {
                             warn "Transaction Failed";
