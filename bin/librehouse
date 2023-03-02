@@ -36,7 +36,7 @@ sub MAIN(*@args) {
                                 if @thing.elems == 1 && @thing[0]<up> !eq $migration.up && @thing[0]<down> !eq $migration.down {
                                     die "Migration $id did not match";
                                 } elsif @thing.elems == 0 {
-                                    exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)" |($migration.id, $migration.up));
+                                    exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)", ($migration.id, $migration.up));
                                     say "Transaction Completed";
                                 }
                             }
@@ -48,7 +48,7 @@ sub MAIN(*@args) {
                         given exec-raw-sql($migration) {
                             when Monad::Result::Ok {
                                 say "Transaction Completed";
-                                exec-raw-sql("DELETE FROM migrations WHERE id=?" |($migration.id));
+                                exec-raw-sql("DELETE FROM migrations WHERE id=?", $migration.id);
                             }
                             when Monad::Result::Error {
                                 warn "Transaction Failed";
