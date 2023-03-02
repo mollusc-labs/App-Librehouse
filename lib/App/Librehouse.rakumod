@@ -39,7 +39,7 @@ $router.get('/signup', &signup-index-handler);
 
 sub signup-handler(Request:D $request, Response:D $response) {
     say 'TODO: Implement sign up';
-    $response.redirect('/login', :permanent, method => GET);
+    $response.redirect('/login', :permanent);
 }
 $router.post('/signup', &signup-handler);
 
