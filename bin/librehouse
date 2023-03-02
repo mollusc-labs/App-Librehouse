@@ -22,47 +22,47 @@ sub MAIN(*@args) {
         }
         when 'migrate' {
             for @migrations -> $migration { 
-                say $migration.id;
+                my $id = $migration.id;
+                say $id;
                 if @args[1] eq 'up' {
                     exec-raw-sql("CREATE TABLE IF NOT EXISTS migrations (
-                                id VARCHAR UNIQUE PRIMARY KEY,
-                                up VARCHAR UNIQUE,
-                                down VARCHAR UNIQUE,)");
+                        id VARCHAR UNIQUE PRIMARY KEY,
+                        up VARCHAR UNIQUE,
+                        down VARCHAR UNIQUE,)");
 
-                    given exec-raw-sql($migration.up) {
-                        when Monad::Result::Ok {
-                            my @thing = exec-sql("SELECT up FROM migrations WHERE id=?", $migration.id);
-                            if @thing.elems == 1 && @thing[0]<up> !eq $migration.up && @thing[0]<down> !eq $migration.down {
-                                die "Migrations did not match";
-                            } else {
-                                next;
+                        given exec-raw-sql($migration.up) {
+                            when Monad::Result::Ok {
+                                my @thing = exec-sql("SELECT up FROM migrations WHERE id=?", $migration.id);
+                                if @thing.elems == 1 && @thing[0]<up> !eq $migration.up && @thing[0]<down> !eq $migration.down {
+                                    die "Migration $id did not match";
+                                } elsif @thing.elems == 0 {
+                                    exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)" |($migration.id, $migration.up));
+                                    say "Transaction Completed";
+                                }
                             }
-                            exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)" |($migration.id, $migration.up));
-                            say "Transaction Completed";
+                            when Monad::Result::Error {
+                                warn "Transaction Failed";
+                            }
                         }
-                        when Monad::Result::Error {
-                            warn "Transaction Failed";
+                    } elsif @args[1] eq 'down' {
+                        given exec-raw-sql($migration) {
+                            when Monad::Result::Ok {
+                                say "Transaction Completed";
+                                exec-raw-sql("DELETE FROM migrations WHERE id=?" |($migration.id));
+                            }
+                            when Monad::Result::Error {
+                                warn "Transaction Failed";
+                            }
                         }
-                    }
-                } elsif @args[1] eq 'down' {
-                    given exec-raw-sql($migration) {
-                        when Monad::Result::Ok {
-                            say "Transaction Completed";
-                            exec-raw-sql("DELETE FROM migrations WHERE id=?" |($migration.id));
-                        }
-                        when Monad::Result::Error {
-                            warn "Transaction Failed";
-                        }
-                    }
 
-                } else {
-                    die "Don't know what to do with '@args'.";
+                    } else {
+                        die "Don't know what to do with '@args'.";
 
+                    }
                 }
+                exit 0;
             }
-            exit 0;
+
+
+            react whenever signal(SIGINT) { exit 0 }
         }
-
-
-    react whenever signal(SIGINT) { exit 0 }
-}
