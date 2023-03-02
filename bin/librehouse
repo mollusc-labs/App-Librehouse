@@ -31,12 +31,12 @@ sub MAIN(*@args) {
 
                     given exec-raw-sql($migration.up) {
                         when Monad::Result::Ok {
-                            if exec-sql("SELECT up FROM migrations WHERE id=?" |$migration.id) eq $migration.up && exec-sql("SELECT down FROM migrations WHERE id=?" |$migration.id) eq $migration.down {
-                                exec-raw-sql("UPDATE migrations up=?, down=? WHERE id=?" |($migration.up, $migration.down, $migration.id));
-                            }else {
-                                exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)" |($migration.id, $migration.up));
-                                say "Transaction Completed";
+                            my @thing = exec-sql("SELECT up FROM migrations WHERE id=?", $migration.id);
+                            if @thing.elems == 1 && @thing[0]<up> !eq $migration.up && @thing[0]<down> !eq $migration.down {
+                                die "Migrations did not match";
                             }
+                            exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)" |($migration.id, $migration.up));
+                            say "Transaction Completed";
                         }
                         when Monad::Result::Error {
                             warn "Transaction Failed";
