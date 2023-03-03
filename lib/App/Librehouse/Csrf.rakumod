@@ -23,7 +23,7 @@ sub start-csrf-service is export {
         start {
             loop {
                 if %csrf-tokens.elems >= 50 {
-                    sleep 1;
+                    await Promise.in(1);
                     next;
                 }
                 
@@ -43,7 +43,7 @@ sub start-csrf-service is export {
                         });
                     }
                 }
-                sleep 2;
+                await Promise.in(2);
             }
         }
 
