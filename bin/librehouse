@@ -30,21 +30,21 @@ sub MAIN(*@args) {
                         up VARCHAR UNIQUE,
                         down VARCHAR UNIQUE,)");
 
-                        given exec-raw-sql($migration.up) {
-                            when Monad::Result::Ok {
-                                my @thing = exec-sql("SELECT up FROM migrations WHERE id=?", $migration.id);
-                                if @thing.elems == 1 && @thing[0]<up> !eq $migration.up && @thing[0]<down> !eq $migration.down {
-                                    die "Migration $id did not match";
-                                } elsif @thing.elems == 0 {
-                                    exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)", ($migration.id, $migration.up));
-                                    say "Transaction Completed";
-                                }
-                            }
-                            when Monad::Result::Error {
-                                warn "Transaction Failed";
+                    given exec-raw-sql($migration.up) {
+                        when Monad::Result::Ok {
+                            my @thing = exec-sql("SELECT up FROM migrations WHERE id=?", $migration.id);
+                            if @thing.elems == 1 && (@thing[0]<up> !eq $migration.up || @thing[0]<down> !eq $migration.down) {
+                                die "Migration $id did not match";
+                            } elsif @thing.elems == 0 {
+                                exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)", $migration.id, $migration.up);
+                                say "Transaction Completed";
                             }
                         }
-                    } elsif @args[1] eq 'down' {
+                        when Monad::Result::Error {
+                            warn "Transaction Failed";
+                        }
+                    }
+                } elsif @args[1] eq 'down' {
                         given exec-raw-sql($migration) {
                             when Monad::Result::Ok {
                                 say "Transaction Completed";
