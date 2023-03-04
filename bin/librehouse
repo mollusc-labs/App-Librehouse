@@ -23,7 +23,6 @@ sub MAIN(*@args) {
         when 'migrate' {
             for @migrations -> $migration { 
                 my $id = $migration.id;
-                say $id;
                 if @args[1] eq 'up' {
                     exec-raw-sql("CREATE TABLE IF NOT EXISTS migrations (
                         id VARCHAR UNIQUE PRIMARY KEY,
@@ -37,21 +36,21 @@ sub MAIN(*@args) {
                                 die "Migration $id did not match";
                             } elsif @thing.elems == 0 {
                                 exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)", $migration.id, $migration.up);
-                                say "Transaction Completed";
+                                say "$id Transaction Completed";
                             }
                         }
                         when Monad::Result::Error {
-                            warn "Transaction Failed";
+                            warn "$id Transaction Failed";
                         }
                     }
                 } elsif @args[1] eq 'down' {
                         given exec-raw-sql($migration) {
                             when Monad::Result::Ok {
-                                say "Transaction Completed";
+                                say "$id Transaction Completed";
                                 exec-raw-sql("DELETE FROM migrations WHERE id=?", $migration.id);
                             }
                             when Monad::Result::Error {
-                                warn "Transaction Failed";
+                                warn "$id Transaction Failed";
                             }
                         }
 
