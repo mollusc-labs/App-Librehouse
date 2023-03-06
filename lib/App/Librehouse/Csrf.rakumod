@@ -11,8 +11,6 @@ has DateTime:D $.age = DateTime.now;
 
 my %csrf-tokens;
 my $csrf-stream = Channel.new;
-my $validation-stream = Channel.new;
-my $validation-result-stream = Supplier.new;
 my Lock $lock .= new;
 
 sub validate-csrf(Str:D $csrf) {
@@ -47,22 +45,15 @@ sub start-csrf-service is export {
                 await Promise.in(2);
             }
         }
-
-        react {
-            whenever $validation-stream {
-                my $result = validate-csrf($_);
-                $lock.protect({ %csrf-tokens{$_}:delete if %csrf-tokens{$_}:exists });
-                $validation-result-stream.send: $_ => $result;
-            }
-        }
     }
 
     Thread.new(:&code).run;
 }
 
 sub validate-token(Str:D $token) is export {
-    $validation-stream.send: $token;
-    $validation-result-stream;
+    my $result = validate-csrf($token);
+    $lock.protect({ %csrf-tokens{$token}:delete }) if $result;
+    return $result;
 }
 
 sub csrf-token is export {

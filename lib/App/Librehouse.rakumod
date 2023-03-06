@@ -17,20 +17,13 @@ my $router = Router.new(root => '/');
 
 # Blocks post requests without a CSRF
 sub csrf-middleware(Request:D $request, Response:D $response, &next) {
-    say $request.content.raku;
     return &next() if $request.method !== POST;
     return $response.status(400).html('<h1>400 Bad Request</h1>') without $request.content.<csrf>;
-
-    react {
-        whenever validate-token($request.content.<csrf>) {
-            return $response.html('<h1>400 Bad Request</h1>') unless (.key eq $request.content.<csrf>) && .value;
-            &next();
-        }
-
-        # Very generous 5 second wait
-        whenever Promise.in(5) {
-            return $response.html('<h1>400 Bad Request</h1>');
-        }
+    
+    if validate-token($request.content.<csrf>) {
+        &next();
+    } else {
+        $response.status(400).html('<h1>400 Bad Request</h1>');
     }
 }
 
