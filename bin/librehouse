@@ -14,7 +14,6 @@ use Monad::Result;
 
 
 sub MAIN(*@args) {
-    # TODO: Implement migrate up, migrate down, and start.
     die "Don't know what to do with '@args'." if @args.elems > 2;
     given @args[0] {
         when 'start' {
@@ -44,24 +43,23 @@ sub MAIN(*@args) {
                         }
                     }
                 } elsif @args[1] eq 'down' {
-                        given exec-raw-sql($migration) {
-                            when Monad::Result::Ok {
-                                say "$id Transaction Completed";
-                                exec-raw-sql("DELETE FROM migrations WHERE id=?", $migration.id);
-                            }
-                            when Monad::Result::Error {
-                                warn "$id Transaction Failed";
-                            }
+                    given exec-raw-sql($migration) {
+                        when Monad::Result::Ok {
+                            say "$id Transaction Completed";
+                            exec-raw-sql("DELETE FROM migrations WHERE id=?", $migration.id);
                         }
-
-                    } else {
-                        die "Don't know what to do with '@args'.";
-
+                        when Monad::Result::Error {
+                            warn "$id Transaction Failed";
+                        }
                     }
+
+                } else {
+                    die "Don't know what to do with '@args'.";
+
                 }
-                exit 0;
             }
-
-
-            react whenever signal(SIGINT) { exit 0 }
+            exit 0;
         }
+        react whenever signal(SIGINT) { exit 0 }
+    }
+}
