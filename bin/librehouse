@@ -11,11 +11,14 @@ use Monad::Result;
     dotenv_load;
 }
 
-
-
 sub MAIN(*@args) {
-    # TODO: Implement migrate up, migrate down, and start.
     die "Don't know what to do with '@args'." if @args.elems > 2;
+
+    exec-raw-sql("CREATE TABLE IF NOT EXISTS migrations (
+                        id VARCHAR UNIQUE PRIMARY KEY,
+                        up VARCHAR UNIQUE,
+                        down VARCHAR UNIQUE)");
+    
     given @args[0] {
         when 'start' {
             App::Librehouse::start(%*ENV<LIBREHOUSE_PORT> // 8080);
@@ -24,44 +27,48 @@ sub MAIN(*@args) {
             for @migrations -> $migration { 
                 my $id = $migration.id;
                 if @args[1] eq 'up' {
-                    exec-raw-sql("CREATE TABLE IF NOT EXISTS migrations (
-                        id VARCHAR UNIQUE PRIMARY KEY,
-                        up VARCHAR UNIQUE,
-                        down VARCHAR UNIQUE,)");
-
-                    given exec-raw-sql($migration.up) {
-                        when Monad::Result::Ok {
-                            my @thing = exec-sql("SELECT up FROM migrations WHERE id=?", $migration.id);
-                            if @thing.elems == 1 && (@thing[0]<up> !eq $migration.up || @thing[0]<down> !eq $migration.down) {
-                                die "Migration $id did not match";
-                            } elsif @thing.elems == 0 {
-                                exec-raw-sql("INSERT INTO migrations (id, query) VALUES (?, ?)", $migration.id, $migration.up);
-                                say "$id Transaction Completed";
+                    given exec-sql("SELECT * FROM migrations WHERE id = ?", $migration.id) {
+                        when Monad::Result::Ok:D {
+                            my $row = $_.unwrap[0] // Nil;
+                            if $row && ($row<up> !eq $migration.up || $row<down> !eq $migration.down) {
+                                die "Migration $id did not match, please fix before continuing.";
+                            } elsif !$row {
+                                exec-sql("INSERT INTO migrations (id, up, down) VALUES (?, ?, ?)", $migration.id, $migration.up, $migration.down);
+                                given exec-raw-sql($migration.up) {
+                                    when Monad::Result::Ok:D {
+                                        say "$id : Transaction Completed";
+                                    }
+                                    when Monad::Result::Error:D {
+                                        warn "$id : Transaction Failed";
+                                    }
+                                }
+                            } else {
+                                say "$id : Already migrated, skipping";
                             }
                         }
-                        when Monad::Result::Error {
-                            warn "$id Transaction Failed";
+
+                        when Monad::Result::Error:D {
+                            say $_.error;
                         }
                     }
+                    
                 } elsif @args[1] eq 'down' {
-                        given exec-raw-sql($migration) {
-                            when Monad::Result::Ok {
-                                say "$id Transaction Completed";
-                                exec-raw-sql("DELETE FROM migrations WHERE id=?", $migration.id);
-                            }
-                            when Monad::Result::Error {
-                                warn "$id Transaction Failed";
-                            }
+                    given exec-raw-sql($migration.down) {
+                        when Monad::Result::Ok:D {
+                            say "$id : Transaction Completed";
+                            exec-raw-sql("DELETE FROM migrations WHERE id = ?", $migration.id);
                         }
-
-                    } else {
-                        die "Don't know what to do with '@args'.";
-
+                        when Monad::Result::Error:D {
+                            warn "$id : Transaction Failed";
+                        }
                     }
+                } else {
+                    die "Don't know what to do with '@args'.";
+
                 }
-                exit 0;
             }
-
-
-            react whenever signal(SIGINT) { exit 0 }
+            default { exit 0 }
         }
+        react whenever signal(SIGINT) { exit 0 }
+    }
+}

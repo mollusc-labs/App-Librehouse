@@ -1,15 +1,11 @@
 use v6.d;
 
-use Monad::Result;
+use Monad::Result :subs;
 use Digest::SHA2;
 
 use App::Librehouse::Database;
 
 unit module App::Librehouse::Service;
-
-sub find-one(Str:D $query, *@args --> Monad::Result:D) {
-    exec-sql($query, |@args) >>= -> @rows { rows.elems ?? ok(@rows[0]) !! error(@rows) };
-}
 
 # Example of a find
 sub find-user(Str:D $id --> Monad::Result:D) is export {
@@ -30,6 +26,13 @@ sub validate-user(%user --> Map:D) {
 }
 
 # Logs the user in
-sub login(Request:D $request --> Monad::Result:D) {
-    
+sub login(%content --> Monad::Result:D) is export {
+    given %content {
+        when :(:$name, :$password) {
+            return ok(Nil);
+        }
+        default {
+            return error(Nil);
+        }
+    }
 }

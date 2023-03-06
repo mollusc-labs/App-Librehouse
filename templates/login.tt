@@ -16,6 +16,11 @@
     <div>
       <button type="submit">Login</button>
     </div>
+    <div class="errors">
+      [% for error in errors %]
+        <div class="error-[% error.key %]">[% error.value %]</div>
+      [% end %]
+    </div>
   </form>
 </main>
 [% INCLUDE "footer" %]

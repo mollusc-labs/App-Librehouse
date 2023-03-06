@@ -1,13 +1,14 @@
 use v6.d;
 
+use Humming-Bird::Core;
+use Humming-Bird::Middleware;
+use Humming-Bird::Advice;
+use Monad::Result;
+
 use App::Librehouse::Service;
 use App::Librehouse::Render;
 use App::Librehouse::Csrf;
 use App::Librehouse::Util;
-
-use Humming-Bird::Core;
-use Humming-Bird::Middleware;
-use Humming-Bird::Advice;
 
 unit module App::Librehouse;
 
@@ -43,17 +44,17 @@ sub login-index-handler(Request:D $request, Response:D $response) {
 $router.get('/login', &login-index-handler);
 
 sub login-handler(Request:D $request, Response:D $response) {
-    given login($request) {
-        Monad::Result::Ok:D {
+    given login($request.content) {
+        when Monad::Result::Ok:D {
             # User is logged in.
             $response.redirect('/');
         }
 
-        Monad::Result::Error:D {
-            my @errors = .unwrap;
+        when Monad::Result::Error:D {
+            my %errors = .value;
             # If there are any errors logging the user in
             my $csrf = await csrf-token;
-            $response.html(App::Librehouse::Render('login', 'Login', :$csrf, :@errors));
+            $response.html(App::Librehouse::Render('login', 'Login', :$csrf, :%errors));
         }
     }
 }
