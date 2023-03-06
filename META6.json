@@ -13,7 +13,8 @@
         "Env::Dotenv",
         "Template6",
         "Monad-Result",
-        "UUID::V4"
+        "UUID::V4",
+        "Digest"
     ],
     "provides": {
         "App::Librehouse": "lib/App/Librehouse.rakumod",

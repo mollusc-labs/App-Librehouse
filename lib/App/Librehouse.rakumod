@@ -43,9 +43,19 @@ sub login-index-handler(Request:D $request, Response:D $response) {
 $router.get('/login', &login-index-handler);
 
 sub login-handler(Request:D $request, Response:D $response) {
-    say 'TODO: Implement login';
+    given login($request) {
+        Monad::Result::Ok:D {
+            # User is logged in.
+            $response.redirect('/');
+        }
 
-    $response.redirect('/');
+        Monad::Result::Error:D {
+            my @errors = .unwrap;
+            # If there are any errors logging the user in
+            my $csrf = await csrf-token;
+            $response.html(App::Librehouse::Render('login', 'Login', :$csrf, :@errors));
+        }
+    }
 }
 $router.post('/login', &login-handler);
 
