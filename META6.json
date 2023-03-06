@@ -13,7 +13,8 @@
         "Env::Dotenv",
         "Template6",
         "Monad-Result",
-        "UUID::V4"
+        "UUID::V4",
+        "Digest"
     ],
     "provides": {
         "App::Librehouse": "lib/App/Librehouse.rakumod",
@@ -21,7 +22,8 @@
         "App::Librehouse::Service": "lib/App/Librehouse/Service.rakumod",
         "App::Librehouse::Database": "lib/App/Librehouse/Database.rakumod",
         "App::Librehouse::Database::Migration": "lib/App/Librehouse/Database/Migration.rakumod",
-        "App::Librehouse::Csrf": "lib/App/Librehouse/Csrf.rakumod"
+        "App::Librehouse::Csrf": "lib/App/Librehouse/Csrf.rakumod",
+        "App::Librehouse::Util": "lib/App/Librehouse/Util.rakumod"
     },
     "description": "A simple, FOSS text BBS",
     "license": "BSD-3-Clause",

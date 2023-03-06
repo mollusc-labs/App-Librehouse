@@ -40,9 +40,12 @@ sub exec-sql(Str:D $sql, *@args --> Monad::Result:D) is export {
             }
         }
 
-        my $stmt = db.prepare($sql);
-        $stmt.execute(|@args);
- 
-        return ok($stmt.all-rows(:array-of-hash));
+        my $stmt = db.prepare($sql); 
+        return ok($stmt.execute(|@args).allrows(:array-of-hash));
     }
 }
+
+sub find-one(Str:D $query, *@args --> Monad::Result:D) is export {
+    exec-sql($query, |@args) >>=: -> @rows { @rows.elems ?? ok(@rows[0]) !! error(@rows) };
+}
+
