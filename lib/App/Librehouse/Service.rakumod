@@ -7,11 +7,6 @@ use App::Librehouse::Database;
 
 unit module App::Librehouse::Service;
 
-# Example of a find
-sub find-user(Str:D $id --> Monad::Result:D) is export {
-    exec-sql('SELECT * FROM usr WHERE id = ?', $id);
-}
-
 sub find-user-by-name-and-password(Str:D $name, Str:D $password --> Monad::Result:D) {
     my $password-hash = sha256($password);
     find-one(q:to/SQL/, $name, $password-hash);
@@ -25,14 +20,21 @@ sub validate-user(%user --> Map:D) {
     %errors;
 }
 
+# Example of a find-one
+sub find-user-by-id(Str:D $id --> Monad::Result:D) is export {
+    find-one('SELECT * FROM usr WHERE id = ?', $id);
+}
+
 # Logs the user in
 sub login(%content --> Monad::Result:D) is export {
-    given %content {
-        when :(:$name, :$password) {
-            return ok(Nil);
+    return error(%) unless %content<password>:exists && %content<name>;
+    given find-one('SELECT id, picture, name, reputation FROM usr WHERE name = ? AND password = ?', %content<name>, %content<password>) {
+        when Monad::Result::Ok:D {
+            return $_;
         }
-        default {
-            return error(Nil);
+
+        when Monad::Result::Error:D {
+            return error(Map.new('not-found', 'Could not find a user with those credentials'));
         }
     }
 }

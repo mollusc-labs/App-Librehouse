@@ -54,6 +54,7 @@ sub login-handler(Request:D $request, Response:D $response) {
             my %errors = .value;
             # If there are any errors logging the user in
             my $csrf = await csrf-token;
+            say %errors.raku;
             $response.html(App::Librehouse::Render('login', 'Login', :$csrf, :%errors));
         }
     }

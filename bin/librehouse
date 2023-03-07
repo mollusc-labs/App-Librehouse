@@ -48,14 +48,14 @@ sub MAIN(*@args) {
                         }
 
                         when Monad::Result::Error:D {
-                            say $_.error;
+                            warn $_.error;
                         }
                     }
                 } elsif @args[1] eq 'down' {
                     given exec-raw-sql($migration.down) {
                         when Monad::Result::Ok:D {
                             say "$id : Transaction Completed";
-                            exec-raw-sql("DELETE FROM migrations WHERE id = ?", $migration.id);
+                            exec-sql("DELETE FROM migrations WHERE id = ?", $migration.id);
                         }
                         when Monad::Result::Error:D {
                             warn "$id : Transaction Failed";
