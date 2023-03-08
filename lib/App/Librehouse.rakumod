@@ -36,6 +36,7 @@ sub index-handler(Request:D $request, Response:D $response) {
 }
 $router.get(&index-handler);
 
+# Login
 sub login-index-handler(Request:D $request, Response:D $response) {
     my $csrf = await csrf-token;
     my $toast = $request.query('toast');
@@ -61,25 +62,32 @@ sub login-handler(Request:D $request, Response:D $response) {
 }
 $router.post('/login', &login-handler);
 
+# Signup
 sub signup-index-handler(Request:D $request, Response:D $response) {
-    given signup($request.content) {
-        when Monad::Result::Ok:D {
-            # Sign up successful, redirect to login
-            $response.redirect('/login', :toast('Successfully created your account. Please login!') );
-        }
-        
-        when Monad::Result::Error:D {
-            my $csrf = await csrf-token;
-            $response.html(App::Librehouse::Render('signup', 'Sign-Up', :$csrf));
-        }
-    }
-    
+    my $csrf = await csrf-token;
+    $response.html(App::Librehouse::Render('signup', 'Sign-up', :$csrf));
 }
 $router.get('/signup', &signup-index-handler);
 
 sub signup-handler(Request:D $request, Response:D $response) {
-    say 'TODO: Implement sign up';
-    $response.redirect('/login?toast=success');
+    my %content = $request.content;
+
+    given signup(%content) {
+        when Monad::Result::Ok:D {
+            # Sign up successful, redirect to login
+            $response.redirect('/login', toast => 'Successfully created your account. Please login!');
+        }
+        
+        when Monad::Result::Error:D {
+            my %return-map;
+            %return-map<errors> = $_.value;
+            %return-map<csrf> = await csrf-token;
+            %return-map<name> = %content<name> with %content<name>;
+            %return-map<email> = %content<email> with %content<email>;
+            
+            $response.html(App::Librehouse::Render('signup', 'Sign-up', |%return-map));
+        }
+    }
 }
 $router.post('/signup', &signup-handler);
 

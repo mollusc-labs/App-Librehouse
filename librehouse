@@ -19,6 +19,8 @@ sub MAIN(*@args) {
                         id VARCHAR UNIQUE PRIMARY KEY,
                         up VARCHAR UNIQUE,
                         down VARCHAR UNIQUE)");
+
+    start react whenever signal(SIGINT) { exit 0 }
     
     given @args[0] {
         when 'start' {
@@ -69,6 +71,5 @@ sub MAIN(*@args) {
             }
             default { exit 0 }
         }
-        react whenever signal(SIGINT) { exit 0 }
     }
 }

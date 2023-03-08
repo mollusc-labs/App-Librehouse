@@ -14,7 +14,7 @@
         "Template::Mustache",
         "Monad-Result",
         "UUID::V4",
-        "Digest",
+        "Digest::SHA256::Native",
         "Email::Valid"
     ],
     "provides": {

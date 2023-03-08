@@ -2,24 +2,40 @@
 <main>
   <h1>Sign Up</h1>
   <form action="/signup" method="POST">
+    {{#name}}
     <div>
       <label>Username</label>
-      <input type="text" name="username" required/>
+      <input type="text" name="name" value="{{.}}" required/>
     </div>
+    {{/name}}
+    {{^name}}
+    <div>
+      <label>Username</label>
+      <input type="text" name="name" required/>
+    </div>
+    {{/name}}
+    {{#email}}
+    <div>
+      <label>Email (Never used outside of sign up, and hashed in our database)</label>
+      <input type="text" name="email" value="{{{.}}}" required/>
+    </div>
+    {{/email}}
+    {{^email}}
     <div>
       <label>Email (Never used outside of sign up, and hashed in our database)</label>
       <input type="text" name="email" required/>
     </div>
+    {{/email}}
     <div>
       <label>Password</label>
       <input type="password" name="password" required/>
     </div>
     <div>
       <label>Confirm-Password</label>
-      <input type="password" name="password-confirm" required/>
+      <input type="password" name="confirm" required/>
     </div>
     <div>
-      <input type="hidden" name="csrf" value="[% csrf %]"/>
+      <input type="hidden" name="csrf" value="{{csrf}}"/>
     </div>
     <div>
       <button type="submit">Sign Up</button>

@@ -110,5 +110,10 @@ our @migrations is export = [
         id => "add_banned_to_usr",
         up => "ALTER TABLE usr ADD COLUMN IF NOT EXISTS banned BOOLEAN DEFAULT FALSE",
         down => "ALTER TABLE usr DROP COLUMN banned CASCADE"
+    ),
+    App::Librehouse::Database::Migration.new(
+        id => 'add_usr_view',
+        up => 'CREATE VIEW usr_view AS SELECT id, picture, name, reputation FROM usr',
+        down => 'DROP VIEW IF EXISTS usr_view CASCADE'
     )
 ];
