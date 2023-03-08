@@ -47,6 +47,7 @@ sub login-handler(Request:D $request, Response:D $response) {
     given login($request.content) {
         when Monad::Result::Ok:D {
             # User is logged in.
+            # TODO: Create a session here
             $response.redirect('/');
         }
 
@@ -54,7 +55,6 @@ sub login-handler(Request:D $request, Response:D $response) {
             my %errors = .value;
             # If there are any errors logging the user in
             my $csrf = await csrf-token;
-            say %errors.raku;
             $response.html(App::Librehouse::Render('login', 'Login', :$csrf, :%errors));
         }
     }
@@ -62,8 +62,18 @@ sub login-handler(Request:D $request, Response:D $response) {
 $router.post('/login', &login-handler);
 
 sub signup-index-handler(Request:D $request, Response:D $response) {
-    my $csrf = await csrf-token;
-    $response.html(App::Librehouse::Render('signup', 'Sign-Up', :$csrf));
+    given signup($request.content) {
+        when Monad::Result::Ok:D {
+            # Sign up successful, redirect to login
+            $response.redirect('/login', :toast('Successfully created your account. Please login!') );
+        }
+        
+        when Monad::Result::Error:D {
+            my $csrf = await csrf-token;
+            $response.html(App::Librehouse::Render('signup', 'Sign-Up', :$csrf));
+        }
+    }
+    
 }
 $router.get('/signup', &signup-index-handler);
 

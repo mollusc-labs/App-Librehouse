@@ -13,6 +13,7 @@ use Monad::Result;
 
 sub MAIN(*@args) {
     die "Don't know what to do with '@args'." if @args.elems > 2;
+    die "No arguments specified" unless @args.elems;
 
     exec-raw-sql("CREATE TABLE IF NOT EXISTS migrations (
                         id VARCHAR UNIQUE PRIMARY KEY,

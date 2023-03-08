@@ -27,14 +27,28 @@ sub find-user-by-id(Str:D $id --> Monad::Result:D) is export {
 
 # Logs the user in
 sub login(%content --> Monad::Result:D) is export {
-    return error(%) unless %content<password>:exists && %content<name>;
+    return error(%) without %content<password> && %content<name>;
     given find-one('SELECT id, picture, name, reputation FROM usr WHERE name = ? AND password = ?', %content<name>, %content<password>) {
         when Monad::Result::Ok:D {
             return $_;
         }
 
         when Monad::Result::Error:D {
-            return error(Map.new('not-found', 'Could not find a user with those credentials'));
+            return error(@({ :key<not-found>,
+                             :value<Could not find a user with those credentials> }));
         }
     }
+}
+
+#| Validates a signup map, returns a map of errors corresponding to
+#| the field that has an error.
+sub validate-signup(%content --> Map:D) {
+    use App::Librehouse::Validator;
+    my %errors;
+}
+
+sub signup(%content --> Monad::Result:D) is export {
+    my @valid-keys = ['password', 'confirm', 'name', 'email'];
+    return error(List.new) unless @valid-keys == %content.grep(*.key ne 'csrf')>>.key.List; # Make sure content is what we expect
+    my %errors = validate-signup(%content);
 }

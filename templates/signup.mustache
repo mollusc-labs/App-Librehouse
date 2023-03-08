@@ -1,4 +1,4 @@
-[% INCLUDE "header" %]
+{{> header}}
 <main>
   <h1>Sign Up</h1>
   <form action="/signup" method="POST">
@@ -24,6 +24,11 @@
     <div>
       <button type="submit">Sign Up</button>
     </div>
+    <div class="errors">
+      {{#errors}}
+        <div class="error-{{key}}">{{value}}</div>
+      {{/errors}}
+    </div>
   </form>
 </main>
-[% INCLUDE "footer" %]
+{{> footer}}
