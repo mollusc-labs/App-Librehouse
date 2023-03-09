@@ -34,14 +34,16 @@ sub start-csrf-service is export {
 
         start {
             loop {
+                my $clear-stream = False;
                 for %csrf-tokens.pairs -> $csrf {
                     if (DateTime.now - $csrf.value.age) >= 3600 {
                         $lock.protect({
-                            $csrf-stream = Channel.new;
                             %csrf-tokens{$csrf.value.token}:delete;
                         });
+                        $clear-stream = True;
                     }
                 }
+                $lock.protect({ $csrf-stream = Channel.new }) if $clear-stream;
                 await Promise.in(2);
             }
         }

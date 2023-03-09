@@ -16,7 +16,7 @@ sub find-user-by-id(Str:D $id --> Monad::Result:D) is export {
 sub find-user-by-name-and-password(Str:D $name, Str:D $password --> Monad::Result:D) {
     my $password-hash = sha256-hex($password);
     find-one(q:to/SQL/, $name, $password-hash);
-    SELECT * FROM usr
+    SELECT * FROM usr_view
     WHERE name = ? AND password = ?
     SQL
 }
