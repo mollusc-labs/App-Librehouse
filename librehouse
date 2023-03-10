@@ -13,11 +13,14 @@ use Monad::Result;
 
 sub MAIN(*@args) {
     die "Don't know what to do with '@args'." if @args.elems > 2;
+    die "No arguments specified" unless @args.elems;
 
     exec-raw-sql("CREATE TABLE IF NOT EXISTS migrations (
                         id VARCHAR UNIQUE PRIMARY KEY,
                         up VARCHAR UNIQUE,
                         down VARCHAR UNIQUE)");
+
+    start react whenever signal(SIGINT) { exit 0 }
     
     given @args[0] {
         when 'start' {
@@ -48,14 +51,14 @@ sub MAIN(*@args) {
                         }
 
                         when Monad::Result::Error:D {
-                            say $_.error;
+                            warn $_.error;
                         }
                     }
                 } elsif @args[1] eq 'down' {
                     given exec-raw-sql($migration.down) {
                         when Monad::Result::Ok:D {
                             say "$id : Transaction Completed";
-                            exec-raw-sql("DELETE FROM migrations WHERE id = ?", $migration.id);
+                            exec-sql("DELETE FROM migrations WHERE id = ?", $migration.id);
                         }
                         when Monad::Result::Error:D {
                             warn "$id : Transaction Failed";
@@ -68,6 +71,5 @@ sub MAIN(*@args) {
             }
             default { exit 0 }
         }
-        react whenever signal(SIGINT) { exit 0 }
     }
 }

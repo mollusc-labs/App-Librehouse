@@ -1,5 +1,0 @@
-[% INCLUDE "header" %]
-<main>
-  This is the index page.
-</main>
-[% INCLUDE "footer" %]
