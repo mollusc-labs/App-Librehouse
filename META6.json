@@ -11,10 +11,11 @@
         "DBIish",
         "Template6",
         "Env::Dotenv",
-        "Template6",
+        "Template::Mustache",
         "Monad-Result",
         "UUID::V4",
-        "Digest"
+        "Digest::SHA256::Native",
+        "Email::Valid"
     ],
     "provides": {
         "App::Librehouse": "lib/App/Librehouse.rakumod",
@@ -23,7 +24,8 @@
         "App::Librehouse::Database": "lib/App/Librehouse/Database.rakumod",
         "App::Librehouse::Database::Migration": "lib/App/Librehouse/Database/Migration.rakumod",
         "App::Librehouse::Csrf": "lib/App/Librehouse/Csrf.rakumod",
-        "App::Librehouse::Util": "lib/App/Librehouse/Util.rakumod"
+        "App::Librehouse::Util": "lib/App/Librehouse/Util.rakumod",
+        "App::Librehouse::Validator": "lib/App/Librehouse/Validator.rakumod"
     },
     "description": "A simple, FOSS text BBS",
     "license": "BSD-3-Clause",
