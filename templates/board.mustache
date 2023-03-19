@@ -2,6 +2,14 @@
 <main>
     <h1>{{name}}</h1>
     <p>{{description}}</p>
-    {{#allow_posts}}
+    {{^allow_posts}}
+        {{#Create_post.render(board_slug)}}
+            <div>
+                {{#posts}}
+                    <p>No threads...</p>
+                {{/posts}}
+            </div>
+        {{/Create_post.render(board_slug)}}
+    {{/allow_posts}}
 </main>
 
