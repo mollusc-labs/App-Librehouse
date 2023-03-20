@@ -8,8 +8,7 @@
     ],
     "depends": [
         "Humming-Bird",
-        "DBIish",
-        "Template6",
+        "DBIish",        
         "Env::Dotenv",
         "Template::Mustache",
         "Monad-Result",
